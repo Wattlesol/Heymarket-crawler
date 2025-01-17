@@ -1,0 +1,4 @@
+selenium 
+seleniumbase
+python-dotenv
+flask
