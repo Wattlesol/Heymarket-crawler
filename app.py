@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import csv
 import time , os
 import json
 from dotenv import load_dotenv
