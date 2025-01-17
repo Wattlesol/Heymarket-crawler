@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
-import time , os
+import time, os
 import json
 from dotenv import load_dotenv
 load_dotenv()
@@ -54,6 +54,7 @@ def login(driver):
     driver.refresh()
     if not "login" in driver.current_url:
         manual_login(driver)
+    print("Login successful")
 
 def process_list(driver, list_rec, rec_time):
     deliverd = []
@@ -70,17 +71,27 @@ def process_list(driver, list_rec, rec_time):
 
         driver.find_element(By.CSS_SELECTOR,'a[data-cy="lists-anchor"][href="/lists/"]').click()
         all_lists = driver.find_elements(By.CLASS_NAME,'lists_list-name__mC6WK')
+        list_found = False
         for lis in all_lists:
             if lis.text == list_rec:
+                list_found = True
                 lis.click()
+                print(f"List '{list_rec}' found and selected")
                 break
+        if not list_found:
+            return {"error": "List not found"}
 
         list_acts = driver.find_elements(By.CSS_SELECTOR, 'div[class="broadcast-box broadcast-box_list-broadcast-box__DLwfp"]')
+        timestamp_found = False
         for act in list_acts:
             heading = act.find_element(By.CLASS_NAME,'broadcast-box_header__LJVUl').text
             if rec_time in heading:
+                timestamp_found = True
                 act.find_element(By.CSS_SELECTOR,'a[class="broadcast-box_report-link__suJYa text-only"]').click()
+                print(f"Message details for timestamp '{rec_time}' found and accessed")
                 break
+        if not timestamp_found:
+            return {"error": "Timestamp not found"}
 
         boxes = driver.find_elements(By.CSS_SELECTOR,'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')
         content = ""
@@ -133,4 +144,4 @@ def api_process_list():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True,port=8000)
+    app.run(debug=True, port=8000)
