@@ -80,7 +80,7 @@ def process_list(driver, list_rec, rec_time, username, password):
     opt_out = []
     
     try:
-        login(driver,username, password)
+        manual_login(driver,username, password)
         try:
             driver.find_element(By.CSS_SELECTOR,'button[aria-label="Close"]').click()
         except:
