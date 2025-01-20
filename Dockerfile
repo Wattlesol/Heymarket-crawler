@@ -8,12 +8,12 @@ WORKDIR /app
 COPY . .
 
 # Install Python dependencies
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Install required system dependencies
 RUN apt-get update && apt-get install -y wget unzip && \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/* \
+    # build-essential \
+    # && rm -rf /var/lib/apt/lists/* \
     wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
     apt install -y ./google-chrome-stable_current_amd64.deb && \
     rm google-chrome-stable_current_amd64.deb && \
