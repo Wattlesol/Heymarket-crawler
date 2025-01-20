@@ -7,13 +7,17 @@ WORKDIR /app
 # Copy the current directory contents into the container
 COPY . .
 
-# Install required system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
-
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --trusted-host pypi.python.org -r requirements.txt
+
+# Install required system dependencies
+RUN apt-get update && apt-get install -y wget unzip && \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && \
+    apt install -y ./google-chrome-stable_current_amd64.deb && \
+    rm google-chrome-stable_current_amd64.deb && \
+    apt-get clean 
 
 # Expose the port your Flask app will run on
 EXPOSE 8000

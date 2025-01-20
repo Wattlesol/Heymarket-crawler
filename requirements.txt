@@ -2,3 +2,4 @@ selenium
 seleniumbase
 python-dotenv
 flask
+webdriver_manager

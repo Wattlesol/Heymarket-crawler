@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 import time, os
 import json
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -16,60 +18,75 @@ def initialize_driver():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
     driver.implicitly_wait(5)
     driver.maximize_window()
     return driver
 
-def manual_login(driver):
-    username = os.getenv('USERNAME')
-    password = os.getenv("PASSWORD")
-    url = "https://app.heymarket.com/account/login/"
+def manual_login(driver,username,password):
+    # username = os.getenv('USERNAME')
+    # password = os.getenv("PASSWORD")
+    # url = "https://app.heymarket.com/account/login/"
 
-    driver.get(url)
+    # driver.get(url)
     driver.find_element(By.ID,'email').send_keys(username)
     driver.find_element(By.ID,"submit-login").click()
     time.sleep(2)
 
     driver.find_element(By.ID,"password").send_keys(password)
     driver.find_element(By.ID,'submit-password').click()
-
-    time.sleep(5)
-
+    time.sleep(2)
     cookies = driver.get_cookies()
-    with open("cookies.json","w") as f:
+    cookie_file = f"{username}_cookies.json"
+    with open(cookie_file,"w") as f:
         json.dump(cookies,f,indent=4)
 
-def login(driver):
+
+def login(driver, username, password):
     driver.get("https://app.heymarket.com/")
-    with open("cookies.json") as f:
+    cookie_file = f"{username}_cookies.json"
+    if not os.path.exists(cookie_file):
+        print("Cookies file not found, performing manual login.")
+        manual_login(driver, username, password)
+        return
+    with open(cookie_file) as f:
         cookies = json.load(f)
     for cookie in cookies:
         try:
             driver.add_cookie(cookie)
         except Exception as e:
             print('Cookie error:', e)
-            pass
-    time.sleep(2)
-    driver.refresh()
-    if not "login" in driver.current_url:
-        manual_login(driver)
-    print("Login successful")
 
-def process_list(driver, list_rec, rec_time):
+    driver.refresh()
+    time.sleep(2)
+    print("Current Url after cookies:", driver.current_url)
+    try:
+        test_ele = driver.find_element(By.CSS_SELECTOR,'a[data-cy="lists-anchor"]')
+    
+        if "https://app.heymarket.com/account/login/".lower() == driver.current_url.lower():
+            print("Cookies failed to log in, performing manual login.")
+            manual_login(driver, username, password)
+        else:
+            print("Login successful using cookies.")
+    except:
+        print("No test Element")
+        print("Cookies failed to log in, performing manual login.")
+        manual_login(driver, username, password)
+
+def process_list(driver, list_rec, rec_time, username, password):
     deliverd = []
     failed = []
     responded = []
     opt_out = []
     
     try:
-        login(driver)
+        login(driver,username, password)
         try:
             driver.find_element(By.CSS_SELECTOR,'button[aria-label="Close"]').click()
         except:
             print("No popup")
 
-        driver.find_element(By.CSS_SELECTOR,'a[data-cy="lists-anchor"][href="/lists/"]').click()
+        driver.find_element(By.CSS_SELECTOR,'a[data-cy="lists-anchor"]').click()
         all_lists = driver.find_elements(By.CLASS_NAME,'lists_list-name__mC6WK')
         list_found = False
         for lis in all_lists:
@@ -131,12 +148,17 @@ def process_list(driver, list_rec, rec_time):
 @app.route('/process_list', methods=['POST'])
 def api_process_list():
     data = request.get_json()
+    print("request appear:",data)
     list_rec = data.get('list_rec', 'Test List')
     rec_time = data.get('rec_time', '2024 at 11:21 PM')
+    username = data.get("username",'')
+    password = data.get("password","")
+    if not {username and password}:
+        return jsonify({'error':"Provide valid username and password"})
 
     driver = initialize_driver()
     try:
-        response = process_list(driver, list_rec, rec_time)
+        response = process_list(driver, list_rec, rec_time, username, password)
         driver.quit()
         return jsonify(response)
     except Exception as e:
