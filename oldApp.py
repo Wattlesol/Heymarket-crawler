@@ -71,7 +71,7 @@ class Database:
 
 def initialize_driver():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    # chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -172,36 +172,64 @@ def process_list(driver, list_rec, rec_time, username, password):
                 print("Send to:", send_to)
         except Exception as e:
             print("Error while fetching campaign or send_to details:", e)
+        reports_data = {}
+        try:
+            reports = WebDriverWait(driver,10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div.reports-stats-list_stat__n5FxB')))
+            for i, itm in enumerate(reports):
+                    sub_elements = itm.find_elements(By.XPATH, ".//*")
+                    if sub_elements:
+                        reports_data.update({sub_elements[0].text :sub_elements[1].text})
+            print("reports data:",reports_data)
+        except Exception as e:
+            print("Error while Fetching reports data")
 
         tbl_data = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'tr[class="ant-table-row ant-table-row-level-0 selectable"]')))
         for data in tbl_data:
             try:
+                # Get all <td> elements in the current row
                 details = data.find_elements(By.TAG_NAME, 'td')
-                name = details[0].text
+
+                # Ensure there are enough <td> elements to avoid index errors
+                if not details or len(details) < 4:
+                    print("Skipping row due to insufficient data")
+                    continue
+
+                name = details[0].text  # First <td> contains the name
+
+                # Determine the column with sub-elements
+                category_index = None
                 for i, itm in enumerate(details[1:]):
-                    if itm.find_element(By.TAG_NAME, 'span'):
+                    sub_elements = itm.find_elements(By.XPATH, ".//*")
+                    if sub_elements:
+                        category_index = i
                         break
-                if i == 0:
+
+                # Classify the name based on the column index
+                if category_index == 0:
                     deliverd.append(name)
-                elif i == 1:
+                elif category_index == 1:
                     failed.append(name)
-                elif i == 2:
+                elif category_index == 2:
                     responded.append(name)
-                else:
+                elif category_index == 3:
                     opt_out.append(name)
+                else:
+                    print(f"Unexpected data structure for row: {name}")
+
             except Exception as e:
                 print("Error while processing table data:", e)
 
         scraped_data = {
             "List": list_rec,
-            "timeStamp": rec_time,
+            "Msg_heading": heading,
             "Content": content,
             "deliverd": deliverd,
             "failed": failed,
             "responded": responded,
             "opt_out": opt_out,
             "Campaign": Campaign,
-            "send_to": send_to
+            "send_to": send_to,
+            "reports": reports_data
         }
 
         db = Database()
@@ -226,21 +254,9 @@ def async_process_list(data):
     scrap_Data=process_list(driver, list_rec, rec_time, username, password)
     print(scrap_Data)
 
-@app.route('/process_list', methods=['POST'])
-def api_process_list():
-    data = request.get_json()
-    list_rec = data.get('list_rec', 'Test List')
-    rec_time = data.get('rec_time', '2024 at 11:21 PM')
-    username = data.get("username", '')
-    password = data.get("password", "")
-    if not {username and password}:
-        return jsonify({'error': "Provide valid username and password"})
-
-    # Start processing in a separate thread
-    thread = Thread(target=async_process_list, args=(data,))
-    thread.start()
-
-    return jsonify({"message": "Request submitted successfully. Scraping is in progress."})
-
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000, debug=True)
+async_process_list({
+  "list_rec": "Test List haymarket Dummy",
+  "rec_time": "2025",
+  "username": "zain@wattlesol.com",
+  "password": "pugfyD-hyxwiz-7piqpe"
+})

@@ -1,142 +1,82 @@
 [
     {
-        "domain": ".app.heymarket.com",
-        "expiry": 1768932531,
-        "httpOnly": false,
-        "name": "__stripe_mid",
-        "path": "/",
-        "sameSite": "Strict",
-        "secure": true,
-        "value": "848f98d7-8851-4e56-97f7-e0d2bbd47f52765bf9"
-    },
-    {
         "domain": ".heymarket.com",
         "httpOnly": false,
         "name": "userty.core.s.b9bd53",
         "path": "/",
         "sameSite": "None",
         "secure": true,
-        "value": "__SI6MTczNzM5ODMzMDM5OSwic2lkIjoiMWI3MWNmZTQ0NDc4ZmI3YzMzMDYyOWYwM2M2ZmZiNjkiLCJzdCI6MTczNzM5NjUyNjQ3MSwicHYiOjEsInJlYWR5Ijp0cnVlLCJ3cyI6IntcIndcIjoxNjgwLFwiaFwiOjc4Nn0ifQ==eyJzZ"
+        "value": "__SI6MTczNzQ5NDIyNzI0Miwic2lkIjoiNWIyNWUyZWQzYzExYWJiNzZhYTA1OTliMzE3OTBmOTUiLCJzdCI6MTczNzQ5MjQyNDk1NCwicHYiOjEsInJlYWR5Ijp0cnVlLCJ3cyI6IntcIndcIjoxNjgwLFwiaFwiOjc4Nn0ifQ==eyJzZ"
     },
     {
         "domain": ".heymarket.com",
-        "expiry": 1737482928,
+        "expiry": 1737578826,
         "httpOnly": false,
         "name": "_clsk",
         "path": "/",
         "sameSite": "Lax",
         "secure": false,
-        "value": "1th65h2%7C1737396528454%7C1%7C1%7Cj.clarity.ms%2Fcollect"
+        "value": "1c0ujbt%7C1737492426452%7C1%7C1%7Ci.clarity.ms%2Fcollect"
     },
     {
         "domain": ".heymarket.com",
-        "expiry": 1771092525,
+        "expiry": 1771188423,
         "httpOnly": false,
         "name": "_uetvid",
         "path": "/",
         "sameSite": "Lax",
         "secure": false,
-        "value": "96ee26e0d75911efac4c7b4b2fb0ce8a"
+        "value": "dea05f70d83811ef9a3fb1e78f6362c2"
     },
     {
         "domain": ".heymarket.com",
-        "expiry": 1771956526,
+        "expiry": 1772052424,
         "httpOnly": false,
         "name": "userty.core.p.b9bd53",
         "path": "/",
         "sameSite": "None",
         "secure": true,
-        "value": "__2VySWQiOiI2OTNhOWQyMDNiOTU4NTBhNDdjOTM4ZmYzZTg1NmM4MCJ9eyJ1c"
+        "value": "__2VySWQiOiIyOTZlYTdiNTc3YjY1NzZjODkzZjdkMTM0YzFmMWFlMiJ9eyJ1c"
     },
     {
         "domain": ".heymarket.com",
-        "expiry": 1737482925,
+        "expiry": 1737578823,
         "httpOnly": false,
         "name": "_uetsid",
         "path": "/",
         "sameSite": "Lax",
         "secure": false,
-        "value": "96ee0fd0d75911efa7c65d53d379359b"
+        "value": "dea02d70d83811ef8e644327b020a1f2"
     },
     {
         "domain": ".heymarket.com",
-        "expiry": 1768932527,
-        "httpOnly": false,
-        "name": "_clck",
-        "path": "/",
-        "sameSite": "Lax",
-        "secure": false,
-        "value": "1quugsh%7C2%7Cfsq%7C0%7C1846"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1771956525,
-        "httpOnly": false,
-        "name": "_ga",
-        "path": "/",
-        "sameSite": "Lax",
-        "secure": false,
-        "value": "GA1.1.508128237.1737396525"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1745172532,
-        "httpOnly": false,
-        "name": "_fbp",
-        "path": "/",
-        "sameSite": "Lax",
-        "secure": false,
-        "value": "fb.1.1737396525869.425989153497030188"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1771956525,
-        "httpOnly": false,
-        "name": "_ga_D90778VEVT",
-        "path": "/",
-        "sameSite": "Lax",
-        "secure": false,
-        "value": "GS1.1.1737396525.1.0.1737396525.0.0.0"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1771474123,
-        "httpOnly": false,
-        "name": "_hp2_id.3300992513",
-        "path": "/",
-        "sameSite": "None",
-        "secure": true,
-        "value": "%7B%22userId%22%3A%225848543088494823%22%2C%22pageviewId%22%3A%22337268561435378%22%2C%22sessionId%22%3A%222732896548883903%22%2C%22identity%22%3Anull%2C%22trackerVersion%22%3A%224.0%22%7D"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1745172523,
-        "httpOnly": false,
-        "name": "_gcl_au",
-        "path": "/",
-        "sameSite": "Lax",
-        "secure": false,
-        "value": "1.1.30194421.1737396524"
-    },
-    {
-        "domain": ".heymarket.com",
-        "expiry": 1737398324,
+        "expiry": 1737494223,
         "httpOnly": false,
         "name": "_hp2_ses_props.3300992513",
         "path": "/",
         "sameSite": "None",
         "secure": true,
-        "value": "%7B%22ts%22%3A1737396523251%2C%22d%22%3A%22app.heymarket.com%22%2C%22h%22%3A%22%2F%22%7D"
+        "value": "%7B%22ts%22%3A1737492421937%2C%22d%22%3A%22app.heymarket.com%22%2C%22h%22%3A%22%2F%22%7D"
     },
     {
-        "domain": ".app.heymarket.com",
-        "expiry": 1737398331,
+        "domain": ".heymarket.com",
+        "expiry": 1769028425,
         "httpOnly": false,
-        "name": "__stripe_sid",
+        "name": "_clck",
         "path": "/",
-        "sameSite": "Strict",
-        "secure": true,
-        "value": "f9620b7f-345d-42fc-ab70-8db2d4948130abc7dc"
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "1nii5bn%7C2%7Cfsr%7C0%7C1847"
+    },
+    {
+        "domain": ".heymarket.com",
+        "expiry": 1772052423,
+        "httpOnly": false,
+        "name": "_ga",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "GA1.1.1805689543.1737492423"
     },
     {
         "domain": ".heymarket.com",
@@ -146,5 +86,45 @@
         "sameSite": "None",
         "secure": true,
         "value": "login"
+    },
+    {
+        "domain": ".heymarket.com",
+        "expiry": 1772052423,
+        "httpOnly": false,
+        "name": "_ga_D90778VEVT",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "GS1.1.1737492423.1.0.1737492423.0.0.0"
+    },
+    {
+        "domain": ".heymarket.com",
+        "expiry": 1745268429,
+        "httpOnly": false,
+        "name": "_fbp",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "fb.1.1737492423200.249569630840347847"
+    },
+    {
+        "domain": ".heymarket.com",
+        "expiry": 1771570022,
+        "httpOnly": false,
+        "name": "_hp2_id.3300992513",
+        "path": "/",
+        "sameSite": "None",
+        "secure": true,
+        "value": "%7B%22userId%22%3A%223385498965131518%22%2C%22pageviewId%22%3A%228083446580875718%22%2C%22sessionId%22%3A%225440590163734826%22%2C%22identity%22%3Anull%2C%22trackerVersion%22%3A%224.0%22%7D"
+    },
+    {
+        "domain": ".heymarket.com",
+        "expiry": 1745268422,
+        "httpOnly": false,
+        "name": "_gcl_au",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "1.1.263394607.1737492422"
     }
 ]
