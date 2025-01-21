@@ -253,10 +253,3 @@ def async_process_list(data):
     password = data.get("password", "")
     scrap_Data=process_list(driver, list_rec, rec_time, username, password)
     print(scrap_Data)
-
-async_process_list({
-  "list_rec": "Test List haymarket Dummy",
-  "rec_time": "2025",
-  "username": "zain@wattlesol.com",
-  "password": "pugfyD-hyxwiz-7piqpe"
-})

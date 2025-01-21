@@ -27,13 +27,12 @@ def api_process_list():
                 'error': "Missing required fields. Provide 'list_rec', 'rec_time', 'username', and 'password'."
             }), 400
 
-        # thread = Thread(target=async_process_list, args=(data,))
-        # thread.start()
-        response = async_process_list(data)
+        thread = Thread(target=async_process_list, args=(data,))
+        thread.start()
 
         return jsonify({
-            "message": response
-        }), 200
+            "message": "Request submitted successfully. Scraping is in progress."
+        }), 202
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
