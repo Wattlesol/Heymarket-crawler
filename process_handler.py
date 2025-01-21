@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from database_handler import Database
-
+from datetime import datetime
 def initialize_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")
@@ -25,6 +25,30 @@ def manual_login(driver, username, password):
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, "submit-login"))).click()
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "password"))).send_keys(password)
     WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.ID, 'submit-password'))).click()
+# Get the current date and time
+now = datetime.now()
+
+# Define a function to add the ordinal suffix to the day
+def get_day_with_suffix(day):
+    if 11 <= day <= 13:  # Special cases for 11th, 12th, 13th
+        return f"{day}th"
+    if day % 10 == 1:  # 1st
+        return f"{day}st"
+    elif day % 10 == 2:  # 2nd
+        return f"{day}nd"
+    elif day % 10 == 3:  # 3rd
+        return f"{day}rd"
+    else:  # Everything else
+        return f"{day}th"
+
+# Get the day with the ordinal suffix
+day_with_suffix = get_day_with_suffix(now.day)
+
+# Format the date and time
+formatted_date_time = now.strftime(f"%B {day_with_suffix}, %Y at %-I:%M %p")
+
+print(formatted_date_time)
+
 
 def process_list(driver, list_rec, rec_time, username, password):
     deliverd = []
@@ -55,13 +79,14 @@ def process_list(driver, list_rec, rec_time, username, password):
         timestamp_found = False
         for act in list_acts:
             heading = act.find_element(By.CLASS_NAME, 'broadcast-box_header__LJVUl').text
+            print("Msg heading:",heading)
             if rec_time in heading:
                 timestamp_found = True
                 act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').click()
                 print(f"Message details for timestamp '{heading}' found and accessed")
                 break
         if not timestamp_found:
-            return {"error": "Timestamp not found"}
+            return {"error": f"Timestamp not found {rec_time}"}
 
         boxes = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')))
         content = ""
@@ -126,4 +151,4 @@ def async_process_list(data):
     rec_time = data.get('rec_time', '2024 at 11:21 PM')
     username = data.get("username", '')
     password = data.get("password", "")
-    process_list(driver, list_rec, rec_time, username, password)
+    return process_list(driver, list_rec, rec_time, username, password)

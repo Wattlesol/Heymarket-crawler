@@ -4,3 +4,4 @@ python-dotenv
 flask
 webdriver_manager
 mysql-connector
+gunicorn

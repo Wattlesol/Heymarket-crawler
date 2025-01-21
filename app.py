@@ -25,5 +25,9 @@ def api_process_list():
 
     return jsonify({"message": "Request submitted successfully. Scraping is in progress."})
 
+@app.route('/', methods=['GET'])
+def hello_world():
+    return jsonify({"message": "Hello, World!"})
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)
