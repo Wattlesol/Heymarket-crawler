@@ -4,3 +4,4 @@ flask
 webdriver_manager
 mysql-connector
 gunicorn
+flask-cors

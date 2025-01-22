@@ -1,14 +1,18 @@
 from flask import Flask, jsonify, request
-from threading import Thread
 from dotenv import load_dotenv
+from flask_cors import CORS
+
+from threading import Thread
+import os ,json
+
 from process_handler import async_process_list
 from database_handler import Database
-import os ,json
 
 load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/process_list', methods=['POST'])
 def api_process_list():
