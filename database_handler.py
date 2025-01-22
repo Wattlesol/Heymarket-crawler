@@ -43,27 +43,27 @@ class Database:
         Saves the scraped data into the `scraped_data` table.
         """
         try:
-            # Convert lists and dictionaries to JSON strings
-            deliverd = json.dumps(data.get('deliverd', []))
+            # Serialize lists and dictionaries to JSON strings
+            delivered = json.dumps(data.get('delivered', []))  # Use 'delivered'
             failed = json.dumps(data.get('failed', []))
             responded = json.dumps(data.get('responded', []))
             opt_out = json.dumps(data.get('opt_out', []))
             reports = json.dumps(data.get('reports', {}))
 
-            # SQL query to insert the data
+            # SQL query to insert the data (exclude `created_at`)
             query = """
                 INSERT INTO scraped_data (
                     list_name, msg_heading, content, campaign, send_to,
-                    deliverd, failed, responded, opt_out, reports
+                    delivered, failed, responded, opt_out, reports
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """
             values = (
-                data.get('List'),
-                data.get('Msg_heading'),
-                data.get('Content'),
-                data.get('Campaign'),
+                data.get('list_name'),
+                data.get('msg_heading'),
+                data.get('content'),
+                data.get('campaign'),
                 data.get('send_to'),
-                deliverd,
+                delivered,
                 failed,
                 responded,
                 opt_out,
@@ -77,9 +77,6 @@ class Database:
             print("Data saved successfully!")
         except Exception as e:
             print("Error saving data to the database:", e)
-        finally:
-            self.cursor.close()
-            self.connection.close()
 
     def fetch_all_data(self):
         """
@@ -92,12 +89,48 @@ class Database:
             # Get column names
             columns = [desc[0] for desc in self.cursor.description]
 
-            # Convert rows to a list of dictionaries
-            data = [dict(zip(columns, row)) for row in rows]
+            # Convert rows into a list of dictionaries and deserialize JSON fields
+            data = []
+            for row in rows:
+                record = dict(zip(columns, row))
+                # Deserialize JSON strings to lists/dictionaries
+                record['delivered'] = json.loads(record['delivered']) if record.get('delivered') else []  # Corrected field
+                record['failed'] = json.loads(record['failed']) if record.get('failed') else []
+                record['responded'] = json.loads(record['responded']) if record.get('responded') else []
+                record['opt_out'] = json.loads(record['opt_out']) if record.get('opt_out') else []
+                record['reports'] = json.loads(record['reports']) if record.get('reports') else {}
+                data.append(record)
+
             return data
         except Exception as e:
             print("Error fetching data:", e)
             return []
-        finally:
-            self.cursor.close()
-            self.connection.close()
+        
+    def fetch_data_by_campaign(self, campaign_name):
+        """
+        Fetches all data from the `scraped_data` table for a given campaign name.
+        """
+        try:
+            query = "SELECT * FROM scraped_data WHERE campaign = %s"
+            self.cursor.execute(query, (campaign_name,))
+            rows = self.cursor.fetchall()
+
+            # Get column names
+            columns = [desc[0] for desc in self.cursor.description]
+
+            # Convert rows into a list of dictionaries and deserialize JSON fields
+            data = []
+            for row in rows:
+                record = dict(zip(columns, row))
+                # Deserialize JSON strings to lists/dictionaries
+                record['delivered'] = json.loads(record['delivered']) if record.get('delivered') else []
+                record['failed'] = json.loads(record['failed']) if record.get('failed') else []
+                record['responded'] = json.loads(record['responded']) if record.get('responded') else []
+                record['opt_out'] = json.loads(record['opt_out']) if record.get('opt_out') else []
+                record['reports'] = json.loads(record['reports']) if record.get('reports') else {}
+                data.append(record)
+
+            return data
+        except Exception as e:
+            print("Error fetching data by campaign:", e)
+            return []

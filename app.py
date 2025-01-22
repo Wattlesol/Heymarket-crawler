@@ -3,7 +3,7 @@ from threading import Thread
 from dotenv import load_dotenv
 from process_handler import async_process_list
 from database_handler import Database
-import os
+import os ,json
 
 load_dotenv()
 
@@ -71,17 +71,46 @@ def get_last_data():
         if not row:
             return jsonify({"message": "No data found."}), 404
 
-        # Get column names for the result
+        # Get column names
         columns = [desc[0] for desc in db.cursor.description]
-        data = dict(zip(columns, row))
+        record = dict(zip(columns, row))
+
+        # Deserialize JSON fields
+        record['delivered'] = json.loads(record['delivered']) if record.get('delivered') else []
+        record['failed'] = json.loads(record['failed']) if record.get('failed') else []
+        record['responded'] = json.loads(record['responded']) if record.get('responded') else []
+        record['opt_out'] = json.loads(record['opt_out']) if record.get('opt_out') else []
+        record['reports'] = json.loads(record['reports']) if record.get('reports') else {}
 
         return jsonify({
-            "data": data,
+            "data": record,
             "message": "Latest data fetched successfully."
         }), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 500 
 
+@app.route('/get_campaign_data', methods=['POST'])
+def get_campaign_data():
+    """
+    Endpoint to fetch all data for a specific campaign name.
+    """
+    # Parse JSON body
+    data = request.get_json()
+    campaign_name = data.get('campaign') if data else None
+
+    if not campaign_name:
+        return jsonify({"error": "Campaign name is required."}), 400
+
+    try:
+        db = Database()
+        results = db.fetch_data_by_campaign(campaign_name)
+
+        if not results:
+            return jsonify({"message": f"No data found for campaign '{campaign_name}'."}), 404
+
+        return jsonify({"data": results, "message": f"Data fetched successfully for campaign '{campaign_name}'."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/', methods=['GET'])
 def hello_world():
