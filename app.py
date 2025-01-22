@@ -17,14 +17,14 @@ def api_process_list():
     """
     try:
         data = request.get_json()
-        list_rec = data.get('list_rec')
-        rec_time = data.get('rec_time')
+        list_id = data.get('list_id')
+        report_id = data.get('report_id')
         username = data.get("username")
         password = data.get("password")
 
-        if not (list_rec and rec_time and username and password):
+        if not (list_id and report_id and username and password):
             return jsonify({
-                'error': "Missing required fields. Provide 'list_rec', 'rec_time', 'username', and 'password'."
+                'error': "Missing required fields. Provide 'list_id', 'report_id', 'username', and 'password'."
             }), 400
 
         thread = Thread(target=async_process_list, args=(data,))
@@ -119,6 +119,49 @@ def hello_world():
     """
     return jsonify({"message": "API is running successfully!"}), 200
 
+@app.route('/get_report_data', methods=['POST'])
+def get_data_by_report_id():
+    """
+    Fetch data for a given report_id.
+    """
+    data = request.get_json()
+    report_id = data.get('report_id') if data else None
+
+    if not report_id:
+        return jsonify({"error": "report_id is required."}), 400
+
+    try:
+        db = Database()
+        results = db.fetch_data_by_report_id(report_id)
+
+        if not results:
+            return jsonify({"message": f"No data found for report_id '{report_id}'."}), 404
+
+        return jsonify({"data": results, "message": f"Data fetched successfully for report_id '{report_id}'."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/get_list_data', methods=['POST'])
+def get_data_by_list_id():
+    """
+    Fetch data for a given List_id.
+    """
+    data = request.get_json()
+    list_id = data.get('list_id') if data else None
+
+    if not list_id:
+        return jsonify({"error": "list_id is required."}), 400
+
+    try:
+        db = Database()
+        results = db.fetch_data_by_list_id(list_id)
+
+        if not results:
+            return jsonify({"message": f"No data found for list_id '{list_id}'."}), 404
+
+        return jsonify({"data": results, "message": f"Data fetched successfully for list_id '{list_id}'."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=8000, debug=True)

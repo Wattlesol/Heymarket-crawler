@@ -39,7 +39,7 @@ def get_day_with_suffix(day):
     else:  # Everything else
         return f"{day}th"
 
-def process_list(driver, list_rec, rec_time, username, password):
+def process_list(driver, list_id, report_id, username, password):
     deliverd = []
     failed = []
     responded = []
@@ -48,48 +48,52 @@ def process_list(driver, list_rec, rec_time, username, password):
     try:
         manual_login(driver, username, password)
         try:
-            WebDriverWait(driver, 2).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Close"]'))).click()
+            WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'button[aria-label="Close"]'))).click()
         except:
             print("No pop-up")
-        now = datetime.now()
-        # Get the day with the ordinal suffix
-        day_with_suffix = get_day_with_suffix(now.day)
 
-        # Format the date and time
-        formatted_date_time = now.strftime(f"%B {day_with_suffix}, %Y at %-I:%M %p")
-
-        print(formatted_date_time)
-
-        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-cy="lists-anchor"]'))).click()
-        all_lists = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'lists_list-name__mC6WK')))
-        list_found = False
-        for lis in all_lists:
-            if lis.text == list_rec:
-                list_found = True
-                lis.click()
-                print(f"List '{list_rec}' found and selected")
-                break
-        if not list_found:
-            return {"error": "List not found"}
+        WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-cy="lists-anchor"]')))
+        print("Main page loaded")
+        # all_lists = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'lists_list-name__mC6WK')))
+        # list_found = False
+        # for lis in all_lists:
+        #     if lis.text == list_rec:
+        #         list_found = True
+        #         lis.click()
+        #         print(f"List '{list_rec}' found and selected")
+        #         break
+        # if not list_found:
+        #     return {"error": "List not found"}
+        list_url = f"https://app.heymarket.com/lists/{list_id}/details/"
+        driver.get(list_url)
 
         list_acts = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="broadcast-box broadcast-box_list-broadcast-box__DLwfp"]')))
         timestamp_found = False
         for act in list_acts:
-            heading = act.find_element(By.CLASS_NAME, 'broadcast-box_header__LJVUl').text
-            if rec_time in heading:
+            report_link = act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').get_attribute('href')
+            print("report_link:", report_link)
+            if f"report/{report_id}" in report_link:
                 timestamp_found = True
                 act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').click()
-                print(f"Message details for timestamp '{heading}' found and accessed")
+                print(f"Message details for id '{report_id}' found and accessed")
                 break
         if not timestamp_found:
-            return {"error": "Message not found"}
-
-        boxes = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')))
+            return {"error": "Timestamp not found"}
+        
+        boxes = WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')))
         content = ""
-        Campaign, send_to = "", ""
+        Campaign, send_to, heading, list_name = "", "", "", ""
+        print(driver.current_url)
         try:
+            list_name = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR,'h1[class="page-header-title mb-0"]'))).text
+            heading = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.CSS_SELECTOR,'div[class="broadcast-box_header__LJVUl"]'))).text
+            print("List:",list_name)
+            print("heading:",heading)
             for box in boxes:
-                content = box.find_element(By.CSS_SELECTOR, 'div[class="broadcast-box_wrapper__Zm6eO"]').find_element(By.CSS_SELECTOR, 'i[class="sub-text"]').text
+                try:
+                    content = box.find_element(By.CSS_SELECTOR, 'div[class="broadcast-box_wrapper__Zm6eO"]').find_element(By.CSS_SELECTOR, 'i[class="sub-text"]').text
+                except:
+                    content = "message is template"
                 Campaign = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class="icon-inbox-black-filled broadcast-box_item-with-icon__YNeBK"]'))).text
                 send_to = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'div[class="icon-contacts broadcast-box_item-with-icon__YNeBK"]'))).text
                 print("Campaign name:", Campaign)
@@ -144,16 +148,18 @@ def process_list(driver, list_rec, rec_time, username, password):
                 print("Error while processing table data:", e)
 
         scraped_data = {
-            "List": list_rec,
-            "Msg_heading": heading,
-            "Content": content,
+            "List_id": list_id,
+            "List": list_name.strip(),
+            "Msg_heading": heading.strip(),
+            "Content": content.strip(),
             "deliverd": deliverd,
             "failed": failed,
             "responded": responded,
             "opt_out": opt_out,
-            "Campaign": Campaign,
-            "send_to": send_to,
-            "reports": reports_data
+            "Campaign": Campaign.strip(),
+            "send_to": send_to.strip(),
+            "reports": reports_data,
+            "report_id": report_id
         }
 
         db = Database()
@@ -162,19 +168,18 @@ def process_list(driver, list_rec, rec_time, username, password):
         print("Scraping completed successfully and data saved to database")
         driver.quit()
 
-        return scraped_data
-    
+        return scraped_data    
     except Exception as e:
         print("Error during process_list execution:", e)
         driver.quit()
         return {"error": str(e)}
     finally:
         print("Process completed")
-        
+
 def async_process_list(data):
     driver = initialize_driver()
-    list_rec = data.get('list_rec', 'Test List')
-    rec_time = data.get('rec_time', '2024 at 11:21 PM')
+    list_id = data.get('list_id', 'Test List')
+    report_id = data.get('report_id', '')
     username = data.get("username", '')
     password = data.get("password", "")
-    process_list(driver, list_rec, rec_time, username, password)
+    process_list(driver, list_id, report_id, username, password)
