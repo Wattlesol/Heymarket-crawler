@@ -23,11 +23,12 @@ Processes a Heymarket list asynchronously by scraping the data.
 **Request Body:**
 ```json
 {
-  "list_id": 1174814,
-  "report_id": 1702123,
-  "username": "your_username",
-  "password": "your_password"
-}
+   "list_id": 1174814,
+   "message_content": "hey this message will sent at 9:25 edit check",
+   "username": "your_username",
+   "password": "_your_password_",
+   "message_timestamp":"January 22nd, 2025 at 9:25 PM"
+ }
 ```
 
 **Response:**
