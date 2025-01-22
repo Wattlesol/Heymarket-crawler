@@ -1,26 +1,259 @@
-# Heymarket-crawler
+### **README: Heymarket Crawler API**
 
-## request body
+This API provides endpoints to process, fetch, and retrieve data related to Heymarket lists and reports. Below are the details of the available endpoints, their usage, sample requests, and responses.
+
+---
+
+## **Base URL**
 ```
+http://heymarket-crawler.nq54xjgsjmjxc.eu-west-1.cs.amazonlightsail.com/
+```
+
+---
+
+### **Endpoints**
+
+#### **1. Process a List**
+**Endpoint:** `/process_list`  
+**Method:** `POST`
+
+**Description:**  
+Processes a Heymarket list asynchronously by scraping the data.
+
+**Request Body:**
+```json
 {
-  "list_rec": "Test List",
-  "rec_time": "2024 at 11:21 PM"
+  "list_id": 1174814,
+  "report_id": 1702123,
+  "username": "your_username",
+  "password": "your_password"
 }
 ```
-## response
-```
+
+**Response:**
+```json
 {
-    "Content": "Hey {{first_name}}, Warm Holiday Wishes from Emend Healthcare This holiday season, we wish you and your loved ones joy, peace, and a bright New Year. Your strength and perseverance on your recovery journey continue to inspire us, and we are so grateful to have been part of your story. We'd like to invite you to share your personal recovery experience with our current clients. Your story has the power to offer hope, guidance, and encouragement to those who are just beginning their own journey. Whether in person or via Zoom, your words could make a lasting difference in their lives. If you feel called to participate, please reach out to us-we'd love to support you in this process. And as always, we're here for you if you need anything along the way. With gratitude and care, Your family at Emend Healthcare (Benchmark Transitions, New Perspective Recovery, My Limitless Journeys, Empower Recovery Center, and Benchmark Montclair)",
-    "List": "Test List",
-    "deliverd": [
-        "(310) 567-1147",
-        "Bryan King",
-        "Test User1",
-        "Brandon Brewer"
-    ],
+  "message": "Request submitted successfully. Scraping is in progress."
+}
+```
+
+---
+
+#### **2. Get All Data**
+**Endpoint:** `/get_all_data`  
+**Method:** `GET`
+
+**Description:**  
+Fetches all scraped data from the database.
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "List_id": 1174814,
+      "List_name": "Test List haymarket Dummy",
+      "Msg_heading": "Message sent on January 22nd, 2025 at 4:35 AM",
+      "Content": "This message will sent at 4 : 35",
+      "Campaign": "Campaign 2 Test",
+      "send_to": "Sent to 1 Contacts",
+      "deliverd": ["(616) 314-2136"],
+      "failed": [],
+      "responded": [],
+      "opt_out": [],
+      "reports": {
+        "Delivered Messages": "1",
+        "Failed Messages": "0",
+        "Response Rate": "0%",
+        "Opt Out Rate": "0%"
+      },
+      "report_id": 1702123,
+      "created_at": "2025-01-22T04:35:00"
+    }
+  ],
+  "message": "Data fetched successfully."
+}
+```
+
+---
+
+#### **3. Get Last Data**
+**Endpoint:** `/get_last_data`  
+**Method:** `GET`
+
+**Description:**  
+Fetches the most recent record from the database.
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 1,
+    "List_id": 1174814,
+    "List_name": "Test List haymarket Dummy",
+    "Msg_heading": "Message sent on January 22nd, 2025 at 4:35 AM",
+    "Content": "This message will sent at 4 : 35",
+    "Campaign": "Campaign 2 Test",
+    "send_to": "Sent to 1 Contacts",
+    "deliverd": ["(616) 314-2136"],
     "failed": [],
-    "opt_out": [],
     "responded": [],
-    "timeStamp": "2024 at 11:21 PM"
+    "opt_out": [],
+    "reports": {
+      "Delivered Messages": "1",
+      "Failed Messages": "0",
+      "Response Rate": "0%",
+      "Opt Out Rate": "0%"
+    },
+    "report_id": 1702123,
+    "created_at": "2025-01-22T04:35:00"
+  },
+  "message": "Latest data fetched successfully."
 }
 ```
+
+---
+
+#### **4. Get Campaign Data**
+**Endpoint:** `/get_campaign_data`  
+**Method:** `POST`
+
+**Description:**  
+Fetches all data for a specific campaign name.
+
+**Request Body:**
+```json
+{
+  "campaign": "Campaign 2 Test"
+}
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "List_id": 1174814,
+      "List_name": "Test List haymarket Dummy",
+      "Msg_heading": "Message sent on January 22nd, 2025 at 4:35 AM",
+      "Content": "This message will sent at 4 : 35",
+      "Campaign": "Campaign 2 Test",
+      "send_to": "Sent to 1 Contacts",
+      "deliverd": ["(616) 314-2136"],
+      "failed": [],
+      "responded": [],
+      "opt_out": [],
+      "reports": {
+        "Delivered Messages": "1",
+        "Failed Messages": "0",
+        "Response Rate": "0%",
+        "Opt Out Rate": "0%"
+      },
+      "report_id": 1702123,
+      "created_at": "2025-01-22T04:35:00"
+    }
+  ],
+  "message": "Data fetched successfully for campaign 'Campaign 2 Test'."
+}
+```
+
+---
+
+#### **5. Get Data by Report ID**
+**Endpoint:** `/get_report_data`  
+**Method:** `POST`
+
+**Description:**  
+Fetches all data for a specific `report_id`.
+
+**Request Body:**
+```json
+{
+  "report_id": 1702123
+}
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "List_id": 1174814,
+      "List_name": "Test List haymarket Dummy",
+      "Msg_heading": "Message sent on January 22nd, 2025 at 4:35 AM",
+      "Content": "This message will sent at 4 : 35",
+      "Campaign": "Campaign 2 Test",
+      "send_to": "Sent to 1 Contacts",
+      "deliverd": ["(616) 314-2136"],
+      "failed": [],
+      "responded": [],
+      "opt_out": [],
+      "reports": {
+        "Delivered Messages": "1",
+        "Failed Messages": "0",
+        "Response Rate": "0%",
+        "Opt Out Rate": "0%"
+      },
+      "report_id": 1702123,
+      "created_at": "2025-01-22T04:35:00"
+    }
+  ],
+  "message": "Data fetched successfully for report_id '1702123'."
+}
+```
+
+---
+
+#### **6. Get Data by List ID**
+**Endpoint:** `/get_list_data`  
+**Method:** `POST`
+
+**Description:**  
+Fetches all data for a specific `list_id`.
+
+**Request Body:**
+```json
+{
+  "list_id": 1174814
+}
+```
+
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "List_id": 1174814,
+      "List_name": "Test List haymarket Dummy",
+      "Msg_heading": "Message sent on January 22nd, 2025 at 4:35 AM",
+      "Content": "This message will sent at 4 : 35",
+      "Campaign": "Campaign 2 Test",
+      "send_to": "Sent to 1 Contacts",
+      "deliverd": ["(616) 314-2136"],
+      "failed": [],
+      "responded": [],
+      "opt_out": [],
+      "reports": {
+        "Delivered Messages": "1",
+        "Failed Messages": "0",
+        "Response Rate": "0%",
+        "Opt Out Rate": "0%"
+      },
+      "report_id": 1702123,
+      "created_at": "2025-01-22T04:35:00"
+    }
+  ],
+  "message": "Data fetched successfully for list_id '1174814'."
+}
+```
+
+---
+
+### **Notes**
+- Ensure all required fields are included in the request.
+- Proper authentication and validation are recommended for production environments.
+
