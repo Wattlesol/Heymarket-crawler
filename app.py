@@ -17,14 +17,15 @@ def api_process_list():
     """
     try:
         data = request.get_json()
-        list_id = data.get('list_id')
-        report_id = data.get('report_id')
+        list_id = data.get('list_id', '')
+        message_content = data.get('message_content')
+        message_content = data.get('message_timestamp')
         username = data.get("username")
         password = data.get("password")
 
-        if not (list_id and report_id and username and password):
+        if not (list_id and message_content and message_content and username and password):
             return jsonify({
-                'error': "Missing required fields. Provide 'list_id', 'report_id', 'username', and 'password'."
+                'error': "Missing required fields. Provide 'list_id', 'message_content', 'message_content', 'username', and 'password'."
             }), 400
 
         thread = Thread(target=async_process_list, args=(data,))

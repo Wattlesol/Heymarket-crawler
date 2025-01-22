@@ -123,7 +123,7 @@ def login(driver, username, password):
         print("Cookies failed to log in, performing manual login.")
         manual_login(driver, username, password)
 
-def process_list(driver, list_id, report_id, username, password):
+def process_list(driver, list_id, message_content:str, message_timestamp:str, username:str, password:str):
     deliverd = []
     failed = []
     responded = []
@@ -138,6 +138,7 @@ def process_list(driver, list_id, report_id, username, password):
 
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-cy="lists-anchor"]')))
         print("Main page loaded")
+
         # all_lists = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'lists_list-name__mC6WK')))
         # list_found = False
         # for lis in all_lists:
@@ -148,21 +149,31 @@ def process_list(driver, list_id, report_id, username, password):
         #         break
         # if not list_found:
         #     return {"error": "List not found"}
+
         list_url = f"https://app.heymarket.com/lists/{list_id}/details/"
         driver.get(list_url)
 
         list_acts = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="broadcast-box broadcast-box_list-broadcast-box__DLwfp"]')))
         timestamp_found = False
         for act in list_acts:
-            report_link = act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').get_attribute('href')
-            print("report_link:", report_link)
-            if f"report/{report_id}" in report_link:
+            driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", act)
+            message_heading = act.find_element(By.CSS_SELECTOR,'div[class="broadcast-box_header__LJVUl"]').text
+            try:
+                act_content = act.find_element(By.CSS_SELECTOR,'i[class="sub-text"]').text
+            except:
+                act_content = "Message is a template"
+
+            if message_timestamp.strip() in message_heading and message_content.strip() in act_content:
+                print("Message_content:",act_content)
+                print("Report_heading:", message_heading)
+                report_id = int(act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').get_attribute('href').split("report/")[-1].removesuffix('/'))
                 timestamp_found = True
                 act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').click()
-                print(f"Message details for id '{report_id}' found and accessed")
+                print(f"Message details for '{message_timestamp}' found and accessed")
                 break
         if not timestamp_found:
-            return {"error": "Timestamp not found"}
+            # return {"error": "Required message not found"}
+            input('{"error": "Required message not found"}')
         
         boxes = WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')))
         content = ""
@@ -264,8 +275,18 @@ def process_list(driver, list_id, report_id, username, password):
 def async_process_list(data):
     driver = initialize_driver()
     list_id = data.get('list_id', '')
-    report_id = data.get('report_id', '')
+    message_content = data.get('message_content', '')
+    message_timestamp = data.get('message_timestamp','')
     username = data.get("username", '')
     password = data.get("password", "")
-    scrap_Data=process_list(driver, list_id, report_id, username, password)
+    scrap_Data=process_list(driver, list_id, message_content, message_timestamp, username, password)
     print(scrap_Data)
+
+# async_process_list({
+#   "list_id": 1174814,
+#   "message_content": "hey this message will sent at 9:25 edit check",
+#   "username": "zain@wattlesol.com",
+#   "password": "pugfyD-hyxwiz-7piqpe",
+#   "message_timestamp":"January 22nd, 2025 at 9:25 PM"
+# }
+# )
