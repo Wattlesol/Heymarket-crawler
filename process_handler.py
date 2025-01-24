@@ -16,6 +16,7 @@ def initialize_driver():
     chrome_options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome(options=chrome_options, service=Service(ChromeDriverManager().install()))
     driver.implicitly_wait(5)
+    print("----------------driver Started-----------------")
     return driver
 
 def manual_login(driver, username, password):
@@ -69,7 +70,8 @@ def process_list(driver, list_id, message_content:str, message_timestamp:str, us
         list_url = f"https://app.heymarket.com/lists/{list_id}/details/"
         driver.get(list_url)
 
-        list_acts = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="broadcast-box broadcast-box_list-broadcast-box__DLwfp"]')))
+        list_acts = WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="broadcast-box broadcast-box_list-broadcast-box__DLwfp"]')))
+        print("All List Reports Loaded")
         timestamp_found = False
         for act in list_acts:
             driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", act)
