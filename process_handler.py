@@ -55,18 +55,6 @@ def process_list(driver, list_id, message_content:str, message_timestamp:str, us
 
         WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a[data-cy="lists-anchor"]')))
         print("Main page loaded")
-
-        # all_lists = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'lists_list-name__mC6WK')))
-        # list_found = False
-        # for lis in all_lists:
-        #     if lis.text == list_rec:
-        #         list_found = True
-        #         lis.click()
-        #         print(f"List '{list_rec}' found and selected")
-        #         break
-        # if not list_found:
-        #     return {"error": "List not found"}
-
         list_url = f"https://app.heymarket.com/lists/{list_id}/details/"
         driver.get(list_url)
 
@@ -75,9 +63,14 @@ def process_list(driver, list_id, message_content:str, message_timestamp:str, us
         timestamp_found = False
         for act in list_acts:
             driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", act)
-            message_heading = act.find_element(By.CSS_SELECTOR,'div[class="broadcast-box_header__LJVUl"]').text
+            try:
+                message_heading = act.find_element(By.CSS_SELECTOR,'div[class="broadcast-box_header__LJVUl"]').text
+                print("Heading Found", message_heading)
+            except Exception as e:
+                print("NO Heading Found", e)
             try:
                 act_content = act.find_element(By.CSS_SELECTOR,'i[class="sub-text"]').text
+                print("Message content",act_content)
             except:
                 act_content = "Message is a template"
 
