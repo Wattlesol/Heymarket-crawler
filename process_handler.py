@@ -65,25 +65,24 @@ def process_list(driver, list_id, message_content:str, message_timestamp:str, us
             driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", act)
             try:
                 message_heading = act.find_element(By.CSS_SELECTOR,'div[class="broadcast-box_header__LJVUl"]').text
-                print("Heading Found", message_heading)
+                print("Heading Found:", message_heading)
             except Exception as e:
                 print("NO Heading Found", e)
             try:
                 act_content = act.find_element(By.CSS_SELECTOR,'i[class="sub-text"]').text
-                print("Message content",act_content)
+                print("Message content:",act_content)
             except:
                 act_content = "Message is a template"
-
-            if message_timestamp.strip() in message_heading and message_content.strip() in act_content:
-                print("Message_content:",act_content)
-                print("Report_heading:", message_heading)
+            print('-'*30)
+            if (message_timestamp in message_heading) and (message_content in act_content):
                 report_id = int(act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').get_attribute('href').split("report/")[-1].removesuffix('/'))
                 timestamp_found = True
                 act.find_element(By.CSS_SELECTOR, 'a[class="broadcast-box_report-link__suJYa text-only"]').click()
-                print(f"Message details for '{message_timestamp}' found and accessed")
+                print(f"Message with timestamp '{message_timestamp}' and content '{message_content}'found")
+                print('*'*60)
                 break
         if not timestamp_found:
-            return {"error": "Required message not found"}
+                return { "error": f"Message with timestamp '{message_timestamp}' and content '{message_content}' not found"}
         
         boxes = WebDriverWait(driver, 15).until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, 'div[class="campaign_scheduled-message__BCrXv campaign_campaign-steps__JOTCt mb-0"]')))
         content = ""

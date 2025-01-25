@@ -282,11 +282,11 @@ def async_process_list(data):
     scrap_Data=process_list(driver, list_id, message_content, message_timestamp, username, password)
     print(scrap_Data)
 
-async_process_list({
-  "list_id": 1174814,
-  "message_content": "hey this message will sent at 9:25 edit check",
-  "username": "zain@wattlesol.com",
-  "password": "pugfyD-hyxwiz-7piqpe",
-  "message_timestamp":"January 22nd, 2025 at 9:25 PM"
-}
-)
+# async_process_list({
+#   "list_id": 1174814,
+#   "message_content": "hey this message will sent at 9:25 edit check",
+#   "username": "zain@wattlesol.com",
+#   "password": "pugfyD-hyxwiz-7piqpe",
+#   "message_timestamp":"January 22nd, 2025 at 9:25 PM"
+# }
+# )
